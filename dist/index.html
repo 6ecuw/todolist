@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>todos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <section class="todoApp">
+        <header class="header">
+            <input type="text" class="newItem" placeholder="New item" autofocus>
+        </header>
+        <section class="main">
+            <ul class="listActive"></ul>
+            <span class="toggleCompleted"><%= completed %> marked <%= completed === 1 ? 'item' : 'items' %></span>
+            <ul class="listCompleted"></ul>
+        </section>
+        <footer class="footer"></footer>
+    </section>
+<script type="text/javascript" src="./js/bundle.js"></script></body>
+</html>

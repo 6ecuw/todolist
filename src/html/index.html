@@ -9,11 +9,13 @@
 <body>
     <section class="todoApp">
         <header class="header">
-            <input type="text" class="newItem" placeholder="New item" autofocus>
+            <h1>todos</h1>
         </header>
         <section class="main">
             <ul class="listActive"></ul>
-            <span class="toggleCompleted"><%= completed %> marked <%= completed === 1 ? 'item' : 'items' %></span>
+            <i class="plus"></i>
+            <input type="text" class="newItem" placeholder="New item">
+            <div class="toggleCompleted extended"></div>
             <ul class="listCompleted"></ul>
         </section>
         <footer class="footer"></footer>

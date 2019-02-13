@@ -9,11 +9,12 @@ export default class ItemView extends View {
 
     get events() {
         return {
+            'focus .edit': 'edit',
             'click .edit': 'edit',
             'click .toggle': 'toggleCompleted',
             'click .destroy': 'clear',
-            'keypress .edit': 'updateInEnter',
-            'keypress .edit': 'cancelOnEscape',
+            'keypress .edit': 'updateAndCreateOnEnter',
+            'keydown .edit': 'cancelOnEscapeOrSwitchOnTab',
             'blur .edit': 'close'
         }
     }
@@ -24,18 +25,17 @@ export default class ItemView extends View {
     }
 
     render() {
-        if (this.model.changedAttributes()) return
-
+        if (this.model.changed.id !== undefined) return
+        
         this.$el.html(this.template(this.model.toJSON()))
         this.$el.toggleClass('completed', this.model.get('completed'))
         this.$input = this.$('.edit')
-
+        
         return this
     }
 
     edit() {
         this.$el.addClass('editing')
-        this.$input.focus()
     }
 
     toggleCompleted() {
@@ -60,14 +60,25 @@ export default class ItemView extends View {
         this.$el.removeClass('editing')
     }
 
-    updateOnEnter(e) {
-        if (e.keyCode === 13) this.close()
+    updateAndCreateOnEnter(e) {
+        if (e.which === 13) {
+            this.close()
+            document.querySelector('.newItem').focus()
+        }
     }
-
-    cancelOnEscape(e) {
-        if (e.keyCode === 27) {
+    
+    cancelOnEscapeOrSwitchOnTab(e) {       
+        if (e.which === 27) {
             this.$input.val(this.model.get('title'))
             this.close()
+        }
+        
+        if (e.which === 9) {
+            e.preventDefault()
+            this.close()
+            let nextItem = this.$el.next().find('.edit')[0]
+            nextItem.select()
+            nextItem.setSelectionRange(nextItem.value.length, nextItem.value.length)
         }
     }
 

@@ -11,8 +11,8 @@ export default class AppView extends View {
 
     get events() {
         return {
+            'focus .newItem': 'create',
             'click .toggleCompleted': 'toggleCompleted',
-            'blur .newItem': 'create',
             'keypress .newItem': 'createOnEnter',
             'click .clearCompleted': 'clearCompleted'
         }
@@ -25,44 +25,32 @@ export default class AppView extends View {
         this.$footer = this.$('.footer')
         this.$listActive = this.$('.listActive')
         this.$listCompleted = this.$('.listCompleted')
+        this.$toggleCompleted = this.$('.toggleCompleted')
 
         this.listenTo(Todos, 'add', this.addOne)
-        // this.listenTo(Todos, 'reset', this.addAll)
+        this.listenTo(Todos, 'reset', this.addAll)
+        this.listenTo(Todos, 'change:completed', this.addAll)
         this.listenTo(Todos, 'all', this.render)
 
-        // Todos.fetch({ reset: true })
+        Todos.fetch({ reset: true })
     }
 
-    render() {
+    render() {        
         let completed = Todos.completed().length
-        let remaining = Todos.remaining().length
 
-        if (Todos.length) {
-            this.$main.show()
-            this.$footer.show()
-
-            this.$footer.html(this.template({
-                completed: completed,
-                remaining: remaining
+        if (completed) {
+            this.$toggleCompleted.html(this.template({
+                completed: completed
             }))
-
         } else {
-            this.$main.hide()
-            this.$footer.hide()
+            this.$toggleCompleted.html('')
         }
     }
 
     create() {
-        let text = this.$input.val().trim()
-
-        if (text) {
-            Todos.create({
-                title: text,
-                order: Todos.order()
-            })
-
-            this.$input.val('')
-        }
+        Todos.create({
+            order: Todos.order()
+        })
     }
 
     createOnEnter(e) {
@@ -73,9 +61,25 @@ export default class AppView extends View {
         _.invoke(Todos.completed(), 'destroy')
     }
 
-    addOne(todo) {
-        let item = new ItemView({ model: todo })
-        this.$listActive.append(item.render().el)
+    addOne(todo) {       
+        let view = new ItemView({ model: todo })
+        let item = view.render().el
+        
+        if (todo.get('completed')) {
+            this.$listCompleted.append(item)
+        } else {
+            this.$listActive.append(item)
+        }
+
+        if (todo.get('title') === '') {
+            item.querySelector('.edit').focus()
+        }
+    }
+    
+    addAll() {
+        this.$listActive.html('')
+        this.$listCompleted.html('')
+        Todos.each(this.addOne, this)
     }
 
     toggleCompleted() {

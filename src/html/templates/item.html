@@ -1,5 +1,8 @@
 <div class="item">
-    <input type="checkbox" class="toggle" <%= completed ? 'checked' : '' %>>
+    <label class="container">
+        <input type="checkbox" class="toggle" <%= completed ? 'checked' : '' %>>
+        <span class="checkmark"></span>
+    </label>
     <input type="text" class="edit" value="<%- title %>">
     <button class="destroy"></button>
 </div>
